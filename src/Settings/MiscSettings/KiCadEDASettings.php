@@ -75,4 +75,47 @@ class KiCadEDASettings
         description: new TM("settings.misc.kicad_eda.use_custom_list.help"),
     )]
     public bool $useCustomList = false;
+
+    /*
+     * LRV patch: field export switches. Only fields actively consumed by KiCad or
+     * the BOM pipeline stay unconditional (symbol, footprint, reference, value,
+     * datasheet, description, MPN, Manufacturer, Part-DB ID, Part-DB URL).
+     * Everything else is volatile metadata (stock movements, supplier data, tags)
+     * that causes spurious "library symbol mismatch" ERC warnings in KiCad.
+     */
+
+    #[SettingsParameter(
+        label: "KiCad: export stock fields (Stock, Storage Location)",
+        description: "Stock bookings change these fields and trigger ERC library symbol mismatch warnings on every schematic using the part.",
+        envVar: "bool:EDA_KICAD_EXPORT_STOCK_FIELDS", envVarMode: EnvVarMode::OVERWRITE,
+    )]
+    public bool $exportStockFields = true;
+
+    #[SettingsParameter(
+        label: "KiCad: export supplier SPN fields",
+        description: "Export one '<Supplier> SPN' field per orderdetail.",
+        envVar: "bool:EDA_KICAD_EXPORT_SUPPLIER_FIELDS", envVarMode: EnvVarMode::OVERWRITE,
+    )]
+    public bool $exportSupplierFields = true;
+
+    #[SettingsParameter(
+        label: "KiCad: export KiCost fields (manf, manf#, <supplier>#)",
+        description: "KiCost-compatible duplicates of manufacturer and supplier part numbers.",
+        envVar: "bool:EDA_KICAD_EXPORT_KICOST_FIELDS", envVarMode: EnvVarMode::OVERWRITE,
+    )]
+    public bool $exportKicostFields = true;
+
+    #[SettingsParameter(
+        label: "KiCad: export part info fields (Category, Manufacturing Status, Mass, IPN, ...)",
+        description: "Also covers Part-DB Footprint, Part-DB Unit and Part-DB Custom state.",
+        envVar: "bool:EDA_KICAD_EXPORT_PART_INFO_FIELDS", envVarMode: EnvVarMode::OVERWRITE,
+    )]
+    public bool $exportPartInfoFields = true;
+
+    #[SettingsParameter(
+        label: "KiCad: export tags as keywords",
+        description: "When disabled the KiCad symbol keywords stay empty and tag edits no longer touch the symbols.",
+        envVar: "bool:EDA_KICAD_EXPORT_TAGS_AS_KEYWORDS", envVarMode: EnvVarMode::OVERWRITE,
+    )]
+    public bool $exportTagsAsKeywords = true;
 }
